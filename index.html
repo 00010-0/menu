@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Crazy Spot · Menú</title>
+
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Three.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<!-- Fuentes -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --neon:#7CFC00;
+    --neon-soft:#a4ff4f;
+    --neon-dim:#3a7d0a;
+  }
+  html{ scroll-behavior:smooth; }
+  body{
+    background:#020803;
+    font-family:'Barlow Condensed', sans-serif;
+    color:#d9ffd0;
+    overflow-x:hidden;
+  }
+  .font-script{ font-family:'Permanent Marker', cursive; }
+
+  /* canvas de fondo */
+  #bg{ position:fixed; inset:0; z-index:0; }
+
+  /* parpadeo neón del título */
+  @keyframes flicker{
+    0%,100%{ opacity:1; text-shadow:0 0 8px var(--neon),0 0 24px var(--neon),0 0 64px #39ff14; }
+    3%{ opacity:.6; text-shadow:0 0 4px var(--neon); }
+    6%{ opacity:1; }
+    52%{ opacity:1; }
+    54%{ opacity:.7; text-shadow:0 0 6px var(--neon); }
+    56%{ opacity:1; text-shadow:0 0 8px var(--neon),0 0 24px var(--neon),0 0 64px #39ff14; }
+  }
+  .neon-title{ animation:flicker 6s infinite; color:#eaffd9; }
+
+  /* borde neón pulsante de las tarjetas */
+  @keyframes pulseBorder{
+    0%,100%{ box-shadow:0 0 6px rgba(124,252,0,.45), inset 0 0 12px rgba(124,252,0,.08); }
+    50%{ box-shadow:0 0 18px rgba(124,252,0,.75), inset 0 0 18px rgba(124,252,0,.14); }
+  }
+  .card{
+    background:rgba(3,14,5,.62);
+    backdrop-filter:blur(8px);
+    border:1px solid rgba(124,252,0,.55);
+    animation:pulseBorder 4.5s ease-in-out infinite;
+    transition:transform .35s ease, box-shadow .35s ease;
+  }
+  .card:hover{ transform:translateY(-6px) scale(1.015); }
+
+  /* línea de puntos entre nombre y precio */
+  .row{ display:flex; align-items:baseline; gap:.5rem; padding:.18rem 0; }
+  .dots{ flex:1; border-bottom:2px dotted rgba(124,252,0,.35); transform:translateY(-4px); }
+  .row:hover .name{ color:var(--neon-soft); text-shadow:0 0 10px rgba(124,252,0,.8); }
+  .row:hover .price{ color:#fff; }
+  .name,.price{ transition:all .25s ease; }
+
+  /* aparición al hacer scroll */
+  .reveal{ opacity:0; transform:translateY(40px); transition:opacity .8s ease, transform .8s ease; }
+  .reveal.show{ opacity:1; transform:translateY(0); }
+
+  /* subtítulo de categoría interna */
+  .subcat{
+    color:var(--neon-soft);
+    letter-spacing:.18em;
+    font-weight:700;
+    font-size:.78rem;
+    text-transform:uppercase;
+    margin:.7rem 0 .15rem;
+    text-shadow:0 0 8px rgba(124,252,0,.5);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .neon-title,.card{ animation:none; }
+    .reveal{ opacity:1; transform:none; transition:none; }
+  }
+</style>
+</head>
+
+<body>
+<canvas id="bg"></canvas>
+
+<main class="relative z-10 max-w-6xl mx-auto px-4 pb-24">
+
+  <!-- CABECERA -->
+  <header class="pt-20 pb-12 text-center reveal">
+    <p class="tracking-[.5em] text-sm uppercase text-lime-300/80 mb-4">Social Club · Solo Socios</p>
+    <h1 class="font-script neon-title text-6xl md:text-8xl leading-none">Crazy Spot</h1>
+    <p class="font-script text-3xl md:text-4xl mt-3 text-lime-400" style="text-shadow:0 0 14px rgba(124,252,0,.8)">MENU</p>
+    <div class="mt-6 mx-auto w-40 h-px bg-gradient-to-r from-transparent via-lime-400 to-transparent"></div>
+  </header>
+
+  <!-- GRID DEL MENÚ -->
+  <section class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+
+    <!-- WEED -->
+    <div class="card rounded-2xl p-6 reveal">
+      <h2 class="flex items-center gap-3 text-2xl font-bold tracking-widest uppercase text-lime-300 mb-4">
+        <span class="text-xl">🌿</span> Weed
+      </h2>
+      <div id="weed"></div>
+    </div>
+
+    <!-- HASH -->
+    <div class="card rounded-2xl p-6 reveal lg:row-span-2">
+      <h2 class="flex items-center gap-3 text-2xl font-bold tracking-widest uppercase text-lime-300 mb-4">
+        <span class="text-xl">#</span> Hash
+      </h2>
+      <div id="hash"></div>
+    </div>
+
+    <!-- WPFF -->
+    <div class="card rounded-2xl p-6 reveal">
+      <h2 class="flex items-center gap-3 text-2xl font-bold tracking-widest uppercase text-lime-300 mb-4">
+        <span class="text-xl">❄️</span> WPFF
+      </h2>
+      <div id="wpff"></div>
+    </div>
+
+    <!-- ROSIN -->
+    <div class="card rounded-2xl p-6 reveal">
+      <h2 class="flex items-center gap-3 text-2xl font-bold tracking-widest uppercase text-lime-300 mb-4">
+        <span class="text-xl">🍯</span> Rosin
+      </h2>
+      <div id="rosin"></div>
+    </div>
+
+    <!-- EDIBLES -->
+    <div class="card rounded-2xl p-6 reveal">
+      <h2 class="flex items-center gap-3 text-2xl font-bold tracking-widest uppercase text-lime-300 mb-4">
+        <span class="text-xl">🍬</span> Edibles
+      </h2>
+      <div id="edibles"></div>
+    </div>
+
+    <!-- DRINKS -->
+    <div class="card rounded-2xl p-6 reveal">
+      <h2 class="flex items-center gap-3 text-2xl font-bold tracking-widest uppercase text-lime-300 mb-4">
+        <span class="text-xl">🥤</span> Drinks
+      </h2>
+      <div id="drinks"></div>
+    </div>
+
+  </section>
+
+  <footer class="text-center mt-16 text-lime-200/50 text-sm tracking-widest uppercase reveal">
+    Asociación privada · Acceso exclusivo para socios mayores de edad
+  </footer>
+</main>
+
+<script>
+/* ============ DATOS DEL MENÚ ============ */
+const MENU = {
+  weed: [
+    ["Purple Roses","12,50 €"],["Red Haze","13,50 €"],["Cosmopolis","15,00 €"],
+    ["Soda Pop","16,00 €"],["Crypto Chronic","18,00 €"],["Pink Guava","18,00 €"],
+    ["Sushi","18,00 €"],["Gas Guzzler","18,00 €"],["Mind Melts","18,00 €"],
+    ["Zangria","19,00 €"],["Garlic Breath","19,00 €"],["Azulcar #4","18,00 €"]
+  ],
+  hash: [
+    ["Gmo Static","18,00 €"],["FF Static","20,00 €"],
+    {sub:"Staticroom"},
+    ["Glitter Bomb","60,00 €"],["Megan Fox","60,00 €"],["Pollen Frozen Sift Lemon Cherry","40,00 €"],
+    {sub:"Salias Terps"},
+    ["Tropical Juice","60,00 €"],["Banana Rontz","60,00 €"],
+    {sub:"Most Wanted"},
+    ["La Kush Cake Cali Dry","30,00 €"],["Permanent Marker","40,00 €"],["Gelato 33","50,00 €"],
+    {sub:"One Stop CA"},
+    ["Gusher Mintz","40,00 €"],["Amaretto Mintz","40,00 €"]
+  ],
+  wpff:   [["Power Puff Farm","100,00 €"]],
+  rosin:  [["Rosin","150,00 €"]],
+  edibles:[["Gummies","25,00 €"],["Dirty Sprite","30,00 €"]],
+  drinks: [["Agua","1,50 €"],["Cola","2,30 €"],["Té frío","2,50 €"],["Redbull","3,00 €"]]
+};
+
+function render(id, items){
+  const el = document.getElementById(id);
+  el.innerHTML = items.map(it => {
+    if (it.sub) return `<p class="subcat">${it.sub}</p>`;
+    return `<div class="row text-lg">
+      <span class="name">${it[0]}</span>
+      <span class="dots"></span>
+      <span class="price font-semibold text-lime-300">${it[1]}</span>
+    </div>`;
+  }).join("");
+}
+Object.entries(MENU).forEach(([k,v]) => render(k,v));
+
+/* ============ REVEAL ON SCROLL ============ */
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add("show"); io.unobserve(e.target); } });
+},{ threshold:.12 });
+document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+
+/* ============ ESCENA THREE.JS ============ */
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const canvas = document.getElementById("bg");
+const renderer = new THREE.WebGLRenderer({ canvas, antialias:true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x020803);
+scene.fog = new THREE.FogExp2(0x041006, 0.018);
+
+const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, .1, 500);
+camera.position.set(0, 6, 26);
+
+/* --- Luna verde --- */
+const moon = new THREE.Mesh(
+  new THREE.SphereGeometry(7, 48, 48),
+  new THREE.MeshBasicMaterial({ color:0xcaffb0 })
+);
+moon.position.set(0, 12, -90);
+scene.add(moon);
+
+/* halo de la luna (sprite con gradiente radial) */
+function glowTexture(){
+  const c = document.createElement("canvas"); c.width = c.height = 256;
+  const g = c.getContext("2d");
+  const grd = g.createRadialGradient(128,128,10,128,128,128);
+  grd.addColorStop(0,"rgba(160,255,110,0.9)");
+  grd.addColorStop(0.4,"rgba(110,230,60,0.35)");
+  grd.addColorStop(1,"rgba(0,0,0,0)");
+  g.fillStyle = grd; g.fillRect(0,0,256,256);
+  return new THREE.CanvasTexture(c);
+}
+const halo = new THREE.Sprite(new THREE.SpriteMaterial({
+  map: glowTexture(), transparent:true, depthWrite:false,
+  blending:THREE.AdditiveBlending
+}));
+halo.scale.set(60,60,1);
+halo.position.copy(moon.position);
+scene.add(halo);
+
+/* --- Océano wireframe animado --- */
+const oceanGeo = new THREE.PlaneGeometry(260, 160, 90, 60);
+oceanGeo.rotateX(-Math.PI/2);
+const ocean = new THREE.Mesh(
+  oceanGeo,
+  new THREE.MeshBasicMaterial({ color:0x39ff14, wireframe:true, transparent:true, opacity:.28 })
+);
+ocean.position.set(0, -2, -50);
+scene.add(ocean);
+
+/* base oscura bajo el wireframe */
+const oceanBase = new THREE.Mesh(
+  new THREE.PlaneGeometry(260,160),
+  new THREE.MeshBasicMaterial({ color:0x02140a })
+);
+oceanBase.rotation.x = -Math.PI/2;
+oceanBase.position.set(0, -2.4, -50);
+scene.add(oceanBase);
+
+const basePos = oceanGeo.attributes.position.array.slice();
+
+/* --- Luciérnagas / partículas --- */
+const N = 350;
+const pGeo = new THREE.BufferGeometry();
+const pos = new Float32Array(N*3), speed = new Float32Array(N);
+for(let i=0;i<N;i++){
+  pos[i*3]   = (Math.random()-.5)*160;
+  pos[i*3+1] = Math.random()*40 - 2;
+  pos[i*3+2] = -Math.random()*120;
+  speed[i] = .01 + Math.random()*.04;
+}
+pGeo.setAttribute("position", new THREE.BufferAttribute(pos,3));
+const particles = new THREE.Points(pGeo, new THREE.PointsMaterial({
+  color:0xa4ff4f, size:.45, transparent:true, opacity:.85,
+  blending:THREE.AdditiveBlending, depthWrite:false
+}));
+scene.add(particles);
+
+/* --- Parallax con ratón --- */
+let mx = 0, my = 0;
+addEventListener("mousemove", e => {
+  mx = (e.clientX/innerWidth - .5);
+  my = (e.clientY/innerHeight - .5);
+});
+
+/* --- Animación --- */
+const clock = new THREE.Clock();
+function animate(){
+  requestAnimationFrame(animate);
+  const t = clock.getElapsedTime();
+
+  if(!reduceMotion){
+    /* olas */
+    const p = oceanGeo.attributes.position;
+    for(let i=0;i<p.count;i++){
+      const x = basePos[i*3], z = basePos[i*3+2];
+      p.array[i*3+1] = Math.sin(x*.18 + t*1.1)*0.7 + Math.cos(z*.22 + t*.8)*0.55;
+    }
+    p.needsUpdate = true;
+
+    /* partículas que suben */
+    const pp = pGeo.attributes.position;
+    for(let i=0;i<N;i++){
+      pp.array[i*3+1] += speed[i];
+      if(pp.array[i*3+1] > 42) pp.array[i*3+1] = -2;
+    }
+    pp.needsUpdate = true;
+
+    /* respiración del halo y parallax */
+    const s = 60 + Math.sin(t*1.4)*4;
+    halo.scale.set(s,s,1);
+    camera.position.x += (mx*4 - camera.position.x)*.04;
+    camera.position.y += (6 - my*3 - camera.position.y)*.04;
+    camera.lookAt(0, 6, -60);
+  }
+  renderer.render(scene, camera);
+}
+animate();
+
+addEventListener("resize", () => {
+  camera.aspect = innerWidth/innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+</script>
+</body>
+</html>
