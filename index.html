@@ -22,7 +22,7 @@
   }
   html,body{
     height:100%;
-    overflow:hidden;            /* SIN SCROLL */
+    overflow:hidden;                 /* SIN SCROLL */
     background:#020803;
     font-family:'Barlow Condensed', sans-serif;
     color:#d9ffd0;
@@ -30,63 +30,114 @@
   .font-script{ font-family:'Permanent Marker', cursive; }
   #bg{ position:fixed; inset:0; z-index:0; }
 
-  /* parpadeo neón del título */
-  @keyframes flicker{
-    0%,100%{ opacity:1; text-shadow:0 0 .8vh var(--neon),0 0 2.4vh var(--neon),0 0 6vh #39ff14; }
-    3%{ opacity:.6; text-shadow:0 0 .4vh var(--neon); }
-    6%,52%{ opacity:1; }
-    54%{ opacity:.7; text-shadow:0 0 .6vh var(--neon); }
-    56%{ opacity:1; text-shadow:0 0 .8vh var(--neon),0 0 2.4vh var(--neon),0 0 6vh #39ff14; }
-  }
-  .neon-title{ animation:flicker 6s infinite; color:#eaffd9; }
+  /* ===== PALMERAS LATERALES (silueta) ===== */
+  .palm{ position:fixed; top:-4vh; z-index:1; height:70vh; opacity:.92; pointer-events:none;
+         filter:drop-shadow(0 0 3vh rgba(60,180,30,.25)); }
+  .palm-l{ left:-6vw; }
+  .palm-r{ right:-6vw; transform:scaleX(-1); }
+  @keyframes sway{ 0%,100%{ rotate:0deg; } 50%{ rotate:1.2deg; } }
+  .palm svg{ height:100%; animation:sway 7s ease-in-out infinite; transform-origin:bottom center; }
+  .palm-r svg{ animation-delay:2s; }
 
-  /* tarjetas */
-  @keyframes pulseBorder{
-    0%,100%{ box-shadow:0 0 .6vh rgba(124,252,0,.45), inset 0 0 1.2vh rgba(124,252,0,.08); }
-    50%{ box-shadow:0 0 1.8vh rgba(124,252,0,.75), inset 0 0 1.8vh rgba(124,252,0,.14); }
+  /* ===== PANEL CENTRAL CON MARCO DE NEÓN ===== */
+  .panel-wrap{
+    position:relative; z-index:10;
+    height:100%;
+    display:flex; align-items:center; justify-content:center;
+    perspective:160vh;
   }
-  .card{
-    background:rgba(3,14,5,.62);
-    backdrop-filter:blur(8px);
-    border:1px solid rgba(124,252,0,.55);
-    border-radius:1.4vh;
-    padding:1.6vh 1.8vh;
-    animation:pulseBorder 4.5s ease-in-out infinite;
+  @keyframes neonBreath{
+    0%,100%{
+      box-shadow:
+        0 0 .5vh #d6ffb0,
+        0 0 1.6vh var(--neon),
+        0 0 4vh rgba(124,252,0,.85),
+        0 0 9vh rgba(57,255,20,.5),
+        inset 0 0 1.2vh rgba(124,252,0,.5),
+        inset 0 0 6vh rgba(20,60,15,.55);
+    }
+    50%{
+      box-shadow:
+        0 0 .7vh #eaffd6,
+        0 0 2.2vh var(--neon),
+        0 0 5.5vh rgba(124,252,0,.95),
+        0 0 12vh rgba(57,255,20,.6),
+        inset 0 0 1.6vh rgba(124,252,0,.6),
+        inset 0 0 7vh rgba(20,60,15,.6);
+    }
+  }
+  .panel{
+    width:88vw; height:92vh;
+    background:linear-gradient(160deg, rgba(4,18,6,.86), rgba(2,10,4,.92));
+    backdrop-filter:blur(6px);
+    border:.45vh solid var(--neon);
+    border-radius:1vh;
+    animation:neonBreath 4s ease-in-out infinite;
+    transform:rotateY(4deg) rotateX(.5deg);   /* leve inclinación como en el póster */
+    display:flex; flex-direction:column;
+    padding:1.6vh 2vh 1.8vh;
+    overflow:hidden;
+  }
+  /* reflejo del neón en la "arena" */
+  .panel-wrap::after{
+    content:""; position:absolute; left:50%; bottom:0;
+    width:70vw; height:6vh; transform:translateX(-50%);
+    background:radial-gradient(ellipse at center, rgba(124,252,0,.35), transparent 70%);
+    filter:blur(2vh); z-index:-1;
+  }
+
+  /* ===== LOGO ===== */
+  .logo{
+    font-size:7.2vh; line-height:.92;
+    background:linear-gradient(180deg,#f2ffe6 0%, #cfe9b8 35%, #6f8f57 50%, #eaffd2 65%, #9fd178 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter:drop-shadow(0 0 1.2vh rgba(124,252,0,.9)) drop-shadow(0 .4vh .6vh rgba(0,0,0,.8));
+    transform:rotate(-3deg);
+  }
+  @keyframes flicker{
+    0%,100%{ opacity:1; } 3%{ opacity:.55; } 6%{ opacity:1; }
+    52%{ opacity:1; } 54%{ opacity:.7; } 56%{ opacity:1; }
+  }
+  .menu-word{
+    font-size:2.9vh; color:var(--neon-soft); letter-spacing:.25em;
+    text-shadow:0 0 1vh var(--neon), 0 0 3vh rgba(124,252,0,.8);
+    animation:flicker 6s infinite;
+    transform:rotate(-2deg);
+  }
+
+  /* ===== SECCIONES (cajas como en el póster) ===== */
+  .sec{
+    border:.22vh solid rgba(124,252,0,.8);
+    border-radius:.6vh;
+    background:rgba(2,12,4,.55);
+    box-shadow:0 0 1vh rgba(124,252,0,.35), inset 0 0 1.4vh rgba(124,252,0,.07);
+    padding:1vh 1.3vh;
     display:flex; flex-direction:column;
     min-height:0; overflow:hidden;
-    opacity:0; transform:translateY(3vh);
-    animation:pulseBorder 4.5s ease-in-out infinite, enter .9s ease forwards;
   }
-  @keyframes enter{ to{ opacity:1; transform:translateY(0);} }
-
-  .card h2{
-    font-size:2.4vh; font-weight:700; letter-spacing:.25em;
-    text-transform:uppercase; color:#bef264;
-    display:flex; align-items:center; gap:1vh;
-    margin-bottom:1vh;
-    border-bottom:1px solid rgba(124,252,0,.3);
-    padding-bottom:.7vh;
-    flex:none;
+  .sec h2{
+    font-size:2.3vh; font-weight:700; letter-spacing:.22em;
+    text-transform:uppercase; color:#e9ffd6;
+    text-shadow:0 0 .9vh rgba(124,252,0,.9);
+    display:flex; align-items:center; gap:.9vh;
+    border-bottom:.18vh solid rgba(124,252,0,.55);
+    padding-bottom:.5vh; margin-bottom:.6vh; flex:none;
   }
-  .card h2 .ico{ font-size:2.2vh; }
+  .sec h2 .ico{ font-size:2vh; filter:drop-shadow(0 0 .6vh var(--neon)); }
 
   .items{ flex:1; min-height:0; display:flex; flex-direction:column; justify-content:space-evenly; }
-
-  .row{ display:flex; align-items:baseline; gap:.8vh; font-size:1.95vh; line-height:1.25; }
-  .dots{ flex:1; border-bottom:.25vh dotted rgba(124,252,0,.35); transform:translateY(-.4vh); }
-  .price{ font-weight:600; color:#bef264; white-space:nowrap; }
-
+  .row{ display:flex; align-items:baseline; gap:.7vh; font-size:1.85vh; line-height:1.2; }
+  .dots{ flex:1; border-bottom:.22vh dotted rgba(124,252,0,.4); transform:translateY(-.35vh); }
+  .price{ font-weight:600; color:#bef264; white-space:nowrap;
+          text-shadow:0 0 .8vh rgba(124,252,0,.5); }
   .subcat{
-    color:var(--neon-soft);
-    letter-spacing:.18em; font-weight:700;
-    font-size:1.5vh; text-transform:uppercase;
-    text-shadow:0 0 .8vh rgba(124,252,0,.5);
-    margin-top:.3vh;
+    color:var(--neon-soft); letter-spacing:.16em; font-weight:700;
+    font-size:1.45vh; text-transform:uppercase; font-style:italic;
+    text-shadow:0 0 .8vh rgba(124,252,0,.6); margin-top:.2vh;
   }
 
   @media (prefers-reduced-motion: reduce){
-    .neon-title{ animation:none; }
-    .card{ animation:none; opacity:1; transform:none; }
+    .panel,.menu-word,.palm svg{ animation:none; }
   }
 </style>
 </head>
@@ -94,61 +145,80 @@
 <body>
 <canvas id="bg"></canvas>
 
-<!-- TODO EL MENÚ EN UNA PANTALLA -->
-<main class="relative z-10 h-full flex flex-col px-[2.5vw] py-[2vh] gap-[1.6vh]">
+<!-- Palmeras -->
+<div class="palm palm-l">
+  <svg viewBox="0 0 300 600" xmlns="http://www.w3.org/2000/svg" fill="#03140a">
+    <path d="M150 600 L165 280 Q168 230 160 200 L150 200 Q138 240 140 290 L130 600 Z"/>
+    <path d="M155 205 Q90 150 10 165 Q80 110 160 150 Q150 175 155 205 Z"/>
+    <path d="M155 205 Q95 230 30 300 Q60 210 150 185 Q152 196 155 205 Z"/>
+    <path d="M158 200 Q150 120 80 60 Q165 90 172 180 Q164 190 158 200 Z"/>
+    <path d="M162 198 Q200 130 285 110 Q215 180 172 205 Q166 200 162 198 Z"/>
+    <path d="M162 205 Q235 215 290 285 Q210 250 165 218 Q163 210 162 205 Z"/>
+    <path d="M158 196 Q170 110 250 55 Q190 140 168 200 Z"/>
+  </svg>
+</div>
+<div class="palm palm-r">
+  <svg viewBox="0 0 300 600" xmlns="http://www.w3.org/2000/svg" fill="#03140a">
+    <path d="M150 600 L165 280 Q168 230 160 200 L150 200 Q138 240 140 290 L130 600 Z"/>
+    <path d="M155 205 Q90 150 10 165 Q80 110 160 150 Q150 175 155 205 Z"/>
+    <path d="M155 205 Q95 230 30 300 Q60 210 150 185 Q152 196 155 205 Z"/>
+    <path d="M158 200 Q150 120 80 60 Q165 90 172 180 Q164 190 158 200 Z"/>
+    <path d="M162 198 Q200 130 285 110 Q215 180 172 205 Q166 200 162 198 Z"/>
+    <path d="M162 205 Q235 215 290 285 Q210 250 165 218 Q163 210 162 205 Z"/>
+    <path d="M158 196 Q170 110 250 55 Q190 140 168 200 Z"/>
+  </svg>
+</div>
 
-  <!-- CABECERA -->
-  <header class="text-center flex-none">
-    <h1 class="font-script neon-title leading-none" style="font-size:7.5vh">Crazy Spot</h1>
-    <p class="font-script text-lime-400 leading-none" style="font-size:3.2vh; text-shadow:0 0 1.4vh rgba(124,252,0,.8)">MENU</p>
-  </header>
+<!-- PANEL DEL MENÚ -->
+<div class="panel-wrap">
+  <div class="panel">
 
-  <!-- GRID: 3 columnas. Hash ocupa las dos filas del centro -->
-  <section class="flex-1 min-h-0 grid gap-[1.4vh]"
-           style="grid-template-columns:1fr 1.1fr 1fr; grid-template-rows:1.15fr .8fr .8fr;">
+    <!-- Logo -->
+    <header class="text-center flex-none" style="margin-bottom:1vh">
+      <h1 class="font-script logo">Crazy Spot</h1>
+      <p class="font-script menu-word">MENU</p>
+    </header>
 
-    <!-- WEED (columna 1, ocupa 2 filas) -->
-    <div class="card" style="grid-row:1 / span 2; animation-delay:0s,.05s">
-      <h2><span class="ico">🌿</span> Weed</h2>
-      <div class="items" id="weed"></div>
-    </div>
+    <!-- Grid igual que el póster: Weed | Hash | WPFF arriba · Rosin | Edibles | Drinks abajo -->
+    <section class="flex-1 min-h-0 grid gap-[1.2vh]"
+             style="grid-template-columns:1fr 1.08fr 1fr; grid-template-rows:1.7fr 1fr;">
 
-    <!-- HASH (columna 2, ocupa las 3 filas) -->
-    <div class="card" style="grid-row:1 / span 3; animation-delay:0s,.15s">
-      <h2><span class="ico">#</span> Hash</h2>
-      <div class="items" id="hash"></div>
-    </div>
+      <div class="sec">
+        <h2><span class="ico">🌿</span> Weed</h2>
+        <div class="items" id="weed"></div>
+      </div>
 
-    <!-- WPFF -->
-    <div class="card" style="animation-delay:0s,.25s">
-      <h2><span class="ico">❄️</span> WPFF</h2>
-      <div class="items" id="wpff"></div>
-    </div>
+      <div class="sec">
+        <h2><span class="ico">#</span> Hash</h2>
+        <div class="items" id="hash"></div>
+      </div>
 
-    <!-- ROSIN -->
-    <div class="card" style="animation-delay:0s,.35s">
-      <h2><span class="ico">🍯</span> Rosin</h2>
-      <div class="items" id="rosin"></div>
-    </div>
+      <div class="sec">
+        <h2><span class="ico">❄️</span> WPFF</h2>
+        <div class="items" id="wpff"></div>
+      </div>
 
-    <!-- EDIBLES -->
-    <div class="card" style="animation-delay:0s,.45s">
-      <h2><span class="ico">🍬</span> Edibles</h2>
-      <div class="items" id="edibles"></div>
-    </div>
+      <div class="sec">
+        <h2><span class="ico">🍯</span> Rosin</h2>
+        <div class="items" id="rosin"></div>
+      </div>
 
-    <!-- DRINKS -->
-    <div class="card" style="animation-delay:0s,.55s">
-      <h2><span class="ico">🥤</span> Drinks</h2>
-      <div class="items" id="drinks"></div>
-    </div>
+      <div class="sec">
+        <h2><span class="ico">🍬</span> Edibles</h2>
+        <div class="items" id="edibles"></div>
+      </div>
 
-  </section>
+      <div class="sec">
+        <h2><span class="ico">🥤</span> Drinks</h2>
+        <div class="items" id="drinks"></div>
+      </div>
+    </section>
 
-  <footer class="flex-none text-center text-lime-200/50 uppercase tracking-[.4em]" style="font-size:1.4vh">
-    Asociación privada · Solo socios mayores de edad
-  </footer>
-</main>
+    <footer class="flex-none text-center text-lime-200/45 uppercase tracking-[.4em]" style="font-size:1.3vh; margin-top:.8vh">
+      Asociación privada · Solo socios mayores de edad
+    </footer>
+  </div>
+</div>
 
 <script>
 /* ============ DATOS DEL MENÚ (edita aquí) ============ */
@@ -188,7 +258,7 @@ function render(id, items){
 }
 Object.entries(MENU).forEach(([k,v]) => render(k,v));
 
-/* ============ ESCENA THREE.JS ============ */
+/* ============ ESCENA THREE.JS (playa de fondo) ============ */
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const canvas = document.getElementById("bg");
 const renderer = new THREE.WebGLRenderer({ canvas, antialias:true });
@@ -196,76 +266,100 @@ renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.setSize(innerWidth, innerHeight);
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x020803);
-scene.fog = new THREE.FogExp2(0x041006, 0.018);
+scene.background = new THREE.Color(0x041207);
+scene.fog = new THREE.FogExp2(0x062008, 0.016);
 
 const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, .1, 500);
 camera.position.set(0, 6, 26);
 
-/* --- Luna verde --- */
+/* --- Luna a la derecha, como en el póster --- */
 const moon = new THREE.Mesh(
-  new THREE.SphereGeometry(7, 48, 48),
-  new THREE.MeshBasicMaterial({ color:0xcaffb0 })
+  new THREE.SphereGeometry(8, 48, 48),
+  new THREE.MeshBasicMaterial({ color:0xd9ffc2 })
 );
-moon.position.set(0, 12, -90);
+moon.position.set(34, 8, -95);
 scene.add(moon);
 
 function glowTexture(){
   const c = document.createElement("canvas"); c.width = c.height = 256;
   const g = c.getContext("2d");
   const grd = g.createRadialGradient(128,128,10,128,128,128);
-  grd.addColorStop(0,"rgba(160,255,110,0.9)");
-  grd.addColorStop(0.4,"rgba(110,230,60,0.35)");
+  grd.addColorStop(0,"rgba(170,255,120,0.95)");
+  grd.addColorStop(0.4,"rgba(110,230,60,0.4)");
   grd.addColorStop(1,"rgba(0,0,0,0)");
   g.fillStyle = grd; g.fillRect(0,0,256,256);
   return new THREE.CanvasTexture(c);
 }
 const halo = new THREE.Sprite(new THREE.SpriteMaterial({
-  map: glowTexture(), transparent:true, depthWrite:false,
-  blending:THREE.AdditiveBlending
+  map:glowTexture(), transparent:true, depthWrite:false, blending:THREE.AdditiveBlending
 }));
-halo.scale.set(60,60,1);
+halo.scale.set(70,70,1);
 halo.position.copy(moon.position);
 scene.add(halo);
 
+/* --- Nubes (sprites suaves) --- */
+function cloudTexture(){
+  const c = document.createElement("canvas"); c.width = 256; c.height = 128;
+  const g = c.getContext("2d");
+  for(let i=0;i<14;i++){
+    const x = 30+Math.random()*196, y = 40+Math.random()*48, r = 18+Math.random()*26;
+    const grd = g.createRadialGradient(x,y,2,x,y,r);
+    grd.addColorStop(0,"rgba(120,220,80,0.32)");
+    grd.addColorStop(1,"rgba(0,0,0,0)");
+    g.fillStyle = grd; g.beginPath(); g.arc(x,y,r,0,7); g.fill();
+  }
+  return new THREE.CanvasTexture(c);
+}
+const clouds = [];
+for(let i=0;i<7;i++){
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({
+    map:cloudTexture(), transparent:true, depthWrite:false,
+    blending:THREE.AdditiveBlending, opacity:.7
+  }));
+  sp.scale.set(50+Math.random()*40, 16+Math.random()*10, 1);
+  sp.position.set((Math.random()-.5)*180, 18+Math.random()*16, -100-Math.random()*30);
+  sp.userData.v = .008 + Math.random()*.015;
+  clouds.push(sp); scene.add(sp);
+}
+
 /* --- Océano wireframe animado --- */
-const oceanGeo = new THREE.PlaneGeometry(260, 160, 90, 60);
+const oceanGeo = new THREE.PlaneGeometry(280, 170, 95, 60);
 oceanGeo.rotateX(-Math.PI/2);
 const ocean = new THREE.Mesh(
   oceanGeo,
-  new THREE.MeshBasicMaterial({ color:0x39ff14, wireframe:true, transparent:true, opacity:.28 })
+  new THREE.MeshBasicMaterial({ color:0x39ff14, wireframe:true, transparent:true, opacity:.3 })
 );
-ocean.position.set(0, -2, -50);
+ocean.position.set(0, -2, -55);
 scene.add(ocean);
 
 const oceanBase = new THREE.Mesh(
-  new THREE.PlaneGeometry(260,160),
-  new THREE.MeshBasicMaterial({ color:0x02140a })
+  new THREE.PlaneGeometry(280,170),
+  new THREE.MeshBasicMaterial({ color:0x03170c })
 );
 oceanBase.rotation.x = -Math.PI/2;
-oceanBase.position.set(0, -2.4, -50);
+oceanBase.position.set(0, -2.4, -55);
 scene.add(oceanBase);
 
 const basePos = oceanGeo.attributes.position.array.slice();
 
 /* --- Luciérnagas --- */
-const N = 350;
+const N = 400;
 const pGeo = new THREE.BufferGeometry();
 const pos = new Float32Array(N*3), speed = new Float32Array(N);
 for(let i=0;i<N;i++){
-  pos[i*3]   = (Math.random()-.5)*160;
-  pos[i*3+1] = Math.random()*40 - 2;
+  pos[i*3]   = (Math.random()-.5)*170;
+  pos[i*3+1] = Math.random()*42 - 2;
   pos[i*3+2] = -Math.random()*120;
   speed[i] = .01 + Math.random()*.04;
 }
 pGeo.setAttribute("position", new THREE.BufferAttribute(pos,3));
 const particles = new THREE.Points(pGeo, new THREE.PointsMaterial({
-  color:0xa4ff4f, size:.45, transparent:true, opacity:.85,
+  color:0xa4ff4f, size:.5, transparent:true, opacity:.9,
   blending:THREE.AdditiveBlending, depthWrite:false
 }));
 scene.add(particles);
 
-/* --- Animación (deriva suave de cámara, sin ratón: es para TV) --- */
+/* --- Animación --- */
 const clock = new THREE.Clock();
 function animate(){
   requestAnimationFrame(animate);
@@ -282,17 +376,21 @@ function animate(){
     const pp = pGeo.attributes.position;
     for(let i=0;i<N;i++){
       pp.array[i*3+1] += speed[i];
-      if(pp.array[i*3+1] > 42) pp.array[i*3+1] = -2;
+      if(pp.array[i*3+1] > 44) pp.array[i*3+1] = -2;
     }
     pp.needsUpdate = true;
 
-    const s = 60 + Math.sin(t*1.4)*4;
+    clouds.forEach(c => {
+      c.position.x += c.userData.v;
+      if(c.position.x > 100) c.position.x = -100;
+    });
+
+    const s = 70 + Math.sin(t*1.4)*5;
     halo.scale.set(s,s,1);
 
-    /* vaivén lento de cámara para que el fondo se sienta vivo en el TV */
-    camera.position.x = Math.sin(t*.12)*2.5;
-    camera.position.y = 6 + Math.sin(t*.2)*.6;
-    camera.lookAt(0, 6, -60);
+    camera.position.x = Math.sin(t*.1)*2;
+    camera.position.y = 6 + Math.sin(t*.18)*.5;
+    camera.lookAt(0, 7, -60);
   }
   renderer.render(scene, camera);
 }
